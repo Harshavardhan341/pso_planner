@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import random
 import math
 import matplotlib.pyplot as plt
@@ -5,7 +7,9 @@ import matplotlib.pyplot as plt
 prev_global=0
 prev_val=[]
 prev_val2=[]
+
 def objective_function(x):
+    
     total=math.sqrt(x[0]**2+x[1]**2)
     # y = total
     print(x)
@@ -13,8 +17,8 @@ def objective_function(x):
     
     return y
  
-a1=a2=9000
-bounds=[(-10000,10000),(-10000,10000)]  of variables
+a1=a2=50
+bounds=[(-100,100),(-100,100)]  
 nv = 2                  
 mm = -1                  
 particle_size=3       
@@ -23,6 +27,7 @@ w=0.85
 c1=1                  
 c2=2                  
 
+class Particle():
     global a1, a2
     def __init__(self,bounds):
         self.particle_position=[]                    
