@@ -1,0 +1,21 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "",
+        "limitSymbolsToIncludedHeaders": true
+      },
+      "includePath": [
+        "/opt/ros/melodic/include/**",
+        "/opt/jderobot/include/**",
+        "/opt/jderobot/include/**",
+        "/home/hk/turtlebot_ws/src/relaxed_astar/include/**",
+        "/home/hk/sim_ws/src/robot_setup_tf/include/**",
+        "/home/hk/turtlebot_ws/src/wanderbot/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS"
+    }
+  ],
+  "version": 4
+}
