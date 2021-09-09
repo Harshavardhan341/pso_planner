@@ -43,9 +43,9 @@ class Controller
         Controller(ros::NodeHandle *nh)
         {
             n = *nh;
-            odom_sub = nh->subscribe("/odom", 1, &Controller::odomCallback, this);
-            cmd_vel_pub = nh->advertise<geometry_msgs::Twist>("/cmd_vel", 1);
-            desired_pos_sub = nh->subscribe("/desired_pos",10,&Controller::des_pos_cb,this);
+            odom_sub = nh->subscribe("odom", 1, &Controller::odomCallback, this);
+            cmd_vel_pub = nh->advertise<geometry_msgs::Twist>("cmd_vel", 1);
+            desired_pos_sub = nh->subscribe("desired_pos",10,&Controller::des_pos_cb,this);
             
 
             //timer = nh->createTimer(ros::Duration(0.1),&Controller::odomCallback,this);
@@ -90,7 +90,7 @@ class Controller
 
                 ROS_INFO("err_yaw: [%f]",err_yaw);
 
-                twist.angular.z = 1.2*err_yaw - (err_yaw - prev_err);
+                twist.angular.z = 1.5*err_yaw - (err_yaw - prev_err);
                 
                 prev_err = err_yaw;
                 err_yaw = angle - this->yaw_;
@@ -117,7 +117,7 @@ class Controller
             double angle = atan2(desired_point->y - position.y, desired_point->x - position.x);
             err_yaw = angle - this->yaw_;
             ros::Rate rate(10);
-            while(fabs(err_pos)>0.15)            
+            while(fabs(err_pos)>0.17)            
             {   ros::spinOnce();
             
                 ROS_INFO("err_pos: [%f]",err_pos);

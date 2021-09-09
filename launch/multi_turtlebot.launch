@@ -1,0 +1,36 @@
+<launch>
+  <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+  <arg name="nr" default="2"/>
+  <arg name="ns" value="$(eval 'tb3_'+str(arg('nr')))"/>
+  
+
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch" if="$(eval arg('nr') == 0)">
+    <arg name="world_name" value="$(find turtlebot3_gazebo)/worlds/empty_world.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>  
+
+  <group ns = "$(arg ns)">
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+      <param name="publish_frequency" type="double" value="50.0" />
+      <param name="tf_prefix" value="$(arg ns)" />
+    </node>
+    
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg ns) -x $(arg nr) -y 0 -z 0 -param robot_description" />
+    <node name="position_controller" pkg="pso_planner" type="position_controller_node" output="screen"> 
+        
+    </node>
+  </group>
+
+
+    <include file="$(find pso_planner)/launch/multi_turtlebot.launch" if="$(eval arg('nr') - 1 > -1)">
+    <arg name="nr" value="$(eval arg('nr') - 1)"/>
+  </include>
+
+</launch>
