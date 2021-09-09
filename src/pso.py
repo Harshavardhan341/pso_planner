@@ -1,8 +1,10 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import random
 import math
 import matplotlib.pyplot as plt
+import rospy
+from geometry_msgs.msg import Point
 
 prev_global=0
 prev_val=[]
@@ -18,7 +20,7 @@ def objective_function(x):
     return y
  
 a1=a2=50
-bounds=[(-100,100),(-100,100)]  
+bounds=[(-1000,1000),(-1000,1000)]  
 nv = 2                  
 mm = -1                  
 particle_size=3       
@@ -84,6 +86,7 @@ class PSO():
         for i in range(particle_size):
             swarm_particle.append(Particle(bounds))
         A=[]
+        desired_pos_pub = rospy.Publisher("/desired_pos",Point,10)
          
         for i in range(iterations):
             for j in range(particle_size):
@@ -107,6 +110,17 @@ class PSO():
              
              
         print('Optimal solution:', global_best_particle_position)
+        final_pos = Point()
+        final_pos.x = global_best_particle_position[0]
+        final_pos.y = global_best_particle_position[1]
+        print(final_pos)
+        
+        while desired_pos_pub.get_num_connections == 0:
+            rospy.sleep(1)
+        
+        desired_pos_pub.publish(final_pos)
+
+
         print('Objective function value:', fitness_global_best_particle_position)
 
 
@@ -116,16 +130,18 @@ if mm == 1:
     initial_fitness = -float("inf") 
  
 
+if __name__ =="__main__":
+    rospy.init_node("PSO")
 
-PSO(objective_function,bounds,particle_size,iterations)
+    PSO(objective_function,bounds,particle_size,iterations)
 
 
-to_sum=[]
-to_sum = total_time[15:]
+#to_sum=[]
+#to_sum = total_time[15:]
 
-sum_time = 0
-for i in range(len(total_time)):
-    if total_time[i] != float('inf'):
-        sum_time = sum_time+total_time[i]
+#sum_time = 0
+##for i in range(len(total_time)):
+ #   if total_time[i] != float('inf'):
+  #      sum_time = sum_time+total_time[i]
 
-print('total time', sum_time)
+#print('total time', sum_time)
