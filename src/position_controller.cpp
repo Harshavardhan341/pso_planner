@@ -90,7 +90,7 @@ class Controller
 
                 ROS_INFO("err_yaw: [%f]",err_yaw);
 
-                twist.angular.z = 1.5*err_yaw - (err_yaw - prev_err);
+                twist.angular.z = 1.5*err_yaw - 2*(err_yaw - prev_err);
                 
                 prev_err = err_yaw;
                 err_yaw = angle - this->yaw_;

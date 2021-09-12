@@ -20,11 +20,11 @@ def objective_function(x):
     return y
  
 a1=a2=50
-bounds=[(-1000,1000),(-1000,1000)]  
+bounds=[(-1000,1000),(1000,-1000)]  
 nv = 2                  
 mm = -1                  
 particle_size=3       
-iterations=2000          
+iterations=20          
 w=0.85                   
 c1=1                  
 c2=2                  
@@ -62,11 +62,15 @@ class Particle():
             cognitive_velocity = c1*r1*(self.local_best_particle_position[i] - self.particle_position[i])
             social_velocity = c2*r2*(global_best_particle_position[i] - self.particle_position[i])
             self.particle_velocity[i] = w*self.particle_velocity[i]+ cognitive_velocity + social_velocity
+            print("VELOCITY: ")
+            print(self.particle_velocity[i])
+
  
     def update_position(self,bounds):
         for i in range(nv):
             self.particle_position[i]=self.particle_position[i]+self.particle_velocity[i]
- 
+            print("position:")
+            print(self.particle_position[i])
 
             if self.particle_position[i]>bounds[i][1]:
                 self.particle_position[i]=bounds[i][1]
@@ -118,7 +122,7 @@ class PSO():
         while desired_pos_pub.get_num_connections == 0:
             rospy.sleep(1)
         
-        desired_pos_pub.publish(final_pos)
+        #desired_pos_pub.publish(final_pos)
 
 
         print('Objective function value:', fitness_global_best_particle_position)
@@ -131,7 +135,7 @@ if mm == 1:
  
 
 if __name__ =="__main__":
-    rospy.init_node("PSO")
+    #rospy.init_node("PSO")
 
     PSO(objective_function,bounds,particle_size,iterations)
 
