@@ -15,18 +15,20 @@ class Particle
         ros::Subscriber goal_sub;
         float fitness_particle_position = std::numeric_limits<float>::infinity();
         float local_best_fitness = std::numeric_limits<float>::infinity();
-        float global_best_fitness,global_best_x,global_best_y;
-        
+        float global_best_fitness;
+        ros::NodeHandle n;
 
         Particle(ros::NodeHandle *nh)
 
-        {
-            odom_sub = nh->subscribe("odom",1,&Particle::odomCallback,this);
-            goal_sub = nh->subscribe("/goal",1,&Particle::goalCallback,this);
+        {   this->n = *nh;
+            odom_sub = this->n.subscribe("odom",1,&Particle::odomCallback,this);
+            goal_sub = this->n.subscribe("/goal",1,&Particle::goalCallback,this);
         } 
-        void goalCallback(const geometry_msgs::Point::ConstPtr &msg)
+        void goalCallback(const geometry_msgs::Point::ConstPtr& msg)
         {
             goal = *msg;
+            //for 
+            //future_pos()
 
         }
         void odomCallback(const nav_msgs::Odometry::ConstPtr& msg)
@@ -49,23 +51,36 @@ class Particle
                 this->local_best_fitness = this->fitness_particle_position;
             }
         }
-        void future_pos(ros::NodeHandle *nh)
+        void setGlobalBest(const float local_best_fitness_,const geometry_msgs::Point& local_best_pos_)
+        {  
+                this->n.setParam("/global_best/fitness",local_best_fitness_);
+                this->n.setParam("/global_best/x",local_best_pos_.x);
+                this->n.setParam("/global_best/y",local_best_pos_.y);            
+        }
+        void getGlobalBest(float& global_best_fitness_,geometry_msgs::Point& global_best_pos_)
+        {  
+                this->n.getParam("/global_best/fitness",global_best_fitness_);
+                this->n.getParam("/global_best/x",global_best_pos_.x);
+                this->n.getParam("/global_best/y",global_best_pos_.y);            
+        }
+        
+        void future_pos()
         {   float nr,count;
             
-            nh->getParam("/global_best",global_best_fitness);
-            nh->getParam("/count",count);
-            nh->getParam("/nr",nr);
+            this->n.getParam("/global_best/fitness",global_best_fitness);
+            this->n.getParam("/count",count);
+            this->n.getParam("/nr",nr);
             if(count <= nr)
             {
                 if(this->local_best_fitness < global_best_fitness)
-                    nh->setParam("/global_best",this->local_best_fitness);
+                    
+                    setGlobalBest(this->local_best_fitness,this->local_best_pos);
                     //set global_best_position
-                nh->setParam("/count",++count);                 
+                this->n.setParam("/count",++count);                 
 
             }
-            else 
-                nh->getParam("/global_best",global_best_fitness);
-                
+            else if(count > nr)
+                getGlobalBest(this->global_best_fitness,this->global_best);             
             
             
 
