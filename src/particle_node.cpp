@@ -8,7 +8,8 @@
 class Particle
 {
     public:
-        geometry_msgs::Point global_best,local_best_pos,current_pos,future_pos,goal;
+        geometry_msgs::Point global_best_pos,local_best_pos,current_pos,future_pos,goal;
+        //current_pos,future_pos,goal;
         
         float w,c1,c2,r1,r2;
         ros::Subscriber odom_sub;
@@ -16,11 +17,19 @@ class Particle
         float fitness_particle_position = std::numeric_limits<float>::infinity();
         float local_best_fitness = std::numeric_limits<float>::infinity();
         float global_best_fitness;
+        geometry_msgs::Twist particle_velocity;
         ros::NodeHandle n;
 
         Particle(ros::NodeHandle *nh)
 
         {   this->n = *nh;
+            //random number between -1 and 1
+            std::default_random_engine gen;
+            std::uniform_real_distribution<float> dist(-1,1);
+
+
+            this->particle_velocity.linear.x = dist(gen);
+            this->particle_velocity.linear.y = dist(gen);
             odom_sub = this->n.subscribe("odom",1,&Particle::odomCallback,this);
             goal_sub = this->n.subscribe("/goal",1,&Particle::goalCallback,this);
         } 
@@ -32,7 +41,7 @@ class Particle
 
         }
         void odomCallback(const nav_msgs::Odometry::ConstPtr& msg)
-        {
+        {   
             current_pos = msg->pose.pose.position;
 
         }
@@ -43,7 +52,7 @@ class Particle
 
         }
         void evaluate()
-        {   
+        {   ros::spinOnce();
             this->fitness_particle_position = costfunction(&current_pos);
             if(this->fitness_particle_position < this->local_best_fitness)
             {
@@ -80,10 +89,18 @@ class Particle
 
             }
             else if(count > nr)
-                getGlobalBest(this->global_best_fitness,this->global_best);             
+                getGlobalBest(this->global_best_fitness,this->global_best_pos); 
+                        
             
             
 
+        }
+        geometry_msgs::Point update_position(geometry_msgs::Point& global_best_position)
+        {
+            this->r1 = ((double) rand() / (RAND_MAX)) + 1;
+            this->r2 = ((double) rand() / (RAND_MAX)) + 1;
+
+            
         }
 
 

@@ -70,7 +70,7 @@ class Particle():
         for i in range(nv):
             self.particle_position[i]=self.particle_position[i]+self.particle_velocity[i]
             print("position:")
-            print(self.particle_position[i])
+            print(self.particle_position)
 
             if self.particle_position[i]>bounds[i][1]:
                 self.particle_position[i]=bounds[i][1]
