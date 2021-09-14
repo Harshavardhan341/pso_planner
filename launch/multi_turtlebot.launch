@@ -2,7 +2,7 @@
   <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
   <arg name="nr" default="2"/>
   <arg name="x" value="$(eval arg('nr') - 1)"/>
-  <arg name="nr_" default="0"/>
+  <arg name="nr_" default="1"/>
   <arg name="ns" value="$(eval 'tb3_'+str(arg('nr')))"/>
   
   <group if="$(eval arg('nr') == 1)">
@@ -28,7 +28,7 @@
       <param name="tf_prefix" value="$(arg ns)" />
     </node>
     
-    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg ns) -x $(arg x) -y 0 -z 0 -param robot_description" />
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg ns) -x $(arg x) -y $(arg x) -z 0 -param robot_description" />
     <node name="position_controller" pkg="pso_planner" type="position_controller_node" output="screen"/> 
     <node name="particle" pkg="pso_planner" type="particle_node" output="screen"/>    
     

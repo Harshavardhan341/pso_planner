@@ -82,6 +82,7 @@ class Particle
                 this->local_best_pos = this->current_pos;
                 this->local_best_fitness = this->fitness_particle_position;
             }
+            cout<<"Local best positon: "<<this->local_best_pos;
             
         }
         void setGlobalBest(const float local_best_fitness_,const geometry_msgs::Point& local_best_pos_)
@@ -115,19 +116,22 @@ class Particle
                 
                 if(count<nr)
                     {this->n.setParam("/count",++count); 
-                    ros::Duration(0.3).sleep();
+                    ros::Duration(0.1).sleep();
                      } 
                 else 
-                    count = 0;
-                    this->n.setParam("/count",0);     
+                    count = 1;
+                    this->n.setParam("/count",1);     
                 
 
             }        
             getGlobalBest(this->global_best_fitness,this->global_best_pos);
             cout<<"Global_best fitness: "<<this->global_best_fitness<<"\n";
-            this->current_pos = update_position(global_best_pos);
+            cout<<"Global best position x: "<<this->global_best_pos.x<<"\n";
+            cout<<"Global best position y: "<<this->global_best_pos.y<<"\n";
+
+            this->future_position = update_position(global_best_pos);
             //command_pos_pub.publish(future_position);
-            cout<<"Particle_position: "<<this->current_pos<<"\n";
+            
             
         }
         geometry_msgs::Point update_position(geometry_msgs::Point& global_best_position)
@@ -143,7 +147,8 @@ class Particle
             cognitive_velocity.x = c1*r1*(this->local_best_pos.x-this->current_pos.x);
             cognitive_velocity.y = c1*r1*(this->local_best_pos.y-this->current_pos.y);
             
-            cout<<"COGN_VEL_Y: "<<cognitive_velocity.y<<"\n";
+            cout<<"local best position.y: "<<this->local_best_pos.y<<"\n";
+            cout<<"current_pos.y: "<<this->current_pos.y<<"\n";
             
             
             social_velocity.x = c2*r2*(global_best_position.x-this->current_pos.x);
