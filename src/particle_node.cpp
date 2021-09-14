@@ -129,8 +129,9 @@ class Particle
             cout<<"Global best position x: "<<this->global_best_pos.x<<"\n";
             cout<<"Global best position y: "<<this->global_best_pos.y<<"\n";
 
-            this->future_position = update_position(global_best_pos);
+            this->current_pos = update_position(global_best_pos);
             //command_pos_pub.publish(future_position);
+
             
             
         }
