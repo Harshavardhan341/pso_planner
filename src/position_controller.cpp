@@ -70,7 +70,7 @@ class Controller
         void des_pos_cb(const geometry_msgs::Point::ConstPtr& msg)
         {
             desired_position = *msg;
-            this->go_to_desired_point(&desired_position);
+            //this->go_to_desired_point(&desired_position);
         }
 
         void fix_yaw(double angle)

@@ -21,32 +21,33 @@ class Particle
         float global_best_fitness;
         geometry_msgs::Twist particle_velocity;
         ros::NodeHandle n;
+        ros::Publisher command_pos_pub;
 
         Particle(ros::NodeHandle *nh)
 
         {   this->n = *nh;
             //random number between -1 and 1
             std::default_random_engine gen;
-            this->goal.x = 2;
-            this->goal.y = 5;
+            
             c1 = 1;
             c2 = 2;
             w = 0.85;
-            std::uniform_real_distribution<float> dist(-1,1);
-
-
-            this->particle_velocity.linear.x = dist(gen);
-            this->particle_velocity.linear.y = dist(gen);
+            command_pos_pub = this->n.advertise<geometry_msgs::Point>("desired_pos",10);
             odom_sub = this->n.subscribe("odom",1,&Particle::odomCallback,this);
-            //goal_sub = this->n.subscribe("/goal",1,&Particle::goalCallback,this);
+            goal_sub = this->n.subscribe("/goal",1,&Particle::goalCallback,this);
         } 
-        //void goalCallback(const geometry_msgs::Point::ConstPtr& msg)
-        //{
-           // goal = *msg;
-            //for 
-            //future_pos()
+        void goalCallback(const geometry_msgs::Point::ConstPtr& msg)
+        {
+            goal = *msg;
+            cout<<"Goal_x: "<<goal.x;
+            cout<<"Goal_y: "<<goal.y;
+            for(int i=0;i<20;i++)
+            {
+                this->future_pos();
+            }
+            
 
-        //}
+        }
         void odomCallback(const nav_msgs::Odometry::ConstPtr& msg)
         {   
             this->current_pos = msg->pose.pose.position;
@@ -114,11 +115,15 @@ class Particle
             }        
             getGlobalBest(this->global_best_fitness,this->global_best_pos);
             cout<<"Global_best fitness: "<<this->global_best_fitness<<"\n";
+            this->future_position = update_position(global_best_pos);
+            //command_pos_pub.publish(future_position);
 
             
         }
         geometry_msgs::Point update_position(geometry_msgs::Point& global_best_position)
-        {
+        {   
+            geometry_msgs::Point future_position_;
+
             this->r1 = ((double) rand() / (RAND_MAX)) + 1;
             this->r2 = ((double) rand() / (RAND_MAX)) + 1;
 
@@ -131,6 +136,14 @@ class Particle
 
             particle_velocity.linear.x = w*particle_velocity.linear.x + cognitive_velocity.x + social_velocity.x;
             particle_velocity.linear.y = w*particle_velocity.linear.y + cognitive_velocity.y + social_velocity.y;
+            
+            future_position_.x = this->current_pos.x + this->particle_velocity.linear.x;
+            future_position_.y = this->current_pos.y + this->particle_velocity.linear.y;
+
+            cout<<"Future pos x: "<<ros::this_node::getNamespace()<<": "<<future_position_.x<<"\n";
+            cout<<"Future pos y: "<<ros::this_node::getNamespace()<<": "<<future_position_.y<<"\n";
+            
+            return future_position_;
             
             
             
@@ -146,11 +159,6 @@ int main(int argc,char **argv)
     ros::NodeHandle nh;
     Particle particle(&nh);
     int i =0;
-    while(i<5)
-    {ros::Duration(1.0).sleep();
-    ros::spinOnce();
-    particle.future_pos();
-    i++;
-    }
+    ros::spin();
 
 }
