@@ -39,12 +39,22 @@ class Particle
         void goalCallback(const geometry_msgs::Point::ConstPtr& msg)
         {
             goal = *msg;
-            cout<<"Goal_x: "<<goal.x;
-            cout<<"Goal_y: "<<goal.y;
-            for(int i=0;i<20;i++)
+            cout<<"Goal_x: "<<goal.x<<"\n";
+            cout<<"Goal_y: "<<goal.y<<"\n";
+            ros::Duration(5.0).sleep();
+
+            odom_sub.shutdown();
+            for(int i=0;i<200;i++)
             {
                 this->future_pos();
+                this->n.getParam("/global_best/fitness",this->global_best_fitness);
+                if(fabs(this->global_best_fitness)<0.3)
+                    break;
+                    
+                
             }
+            ros::shutdown();
+                    
             
 
         }
@@ -105,7 +115,7 @@ class Particle
                 
                 if(count<nr)
                     {this->n.setParam("/count",++count); 
-                    ros::Duration(2.0).sleep();
+                    ros::Duration(0.3).sleep();
                      } 
                 else 
                     count = 0;
@@ -115,33 +125,42 @@ class Particle
             }        
             getGlobalBest(this->global_best_fitness,this->global_best_pos);
             cout<<"Global_best fitness: "<<this->global_best_fitness<<"\n";
-            this->future_position = update_position(global_best_pos);
+            this->current_pos = update_position(global_best_pos);
             //command_pos_pub.publish(future_position);
-
+            cout<<"Particle_position: "<<this->current_pos<<"\n";
             
         }
         geometry_msgs::Point update_position(geometry_msgs::Point& global_best_position)
         {   
             geometry_msgs::Point future_position_;
 
-            this->r1 = ((double) rand() / (RAND_MAX)) + 1;
-            this->r2 = ((double) rand() / (RAND_MAX)) + 1;
+            this->r1 = ((double) rand() / (RAND_MAX));
+            this->r2 = ((double) rand() / (RAND_MAX));
+            
+
 
             geometry_msgs::Point cognitive_velocity,social_velocity;
             cognitive_velocity.x = c1*r1*(this->local_best_pos.x-this->current_pos.x);
             cognitive_velocity.y = c1*r1*(this->local_best_pos.y-this->current_pos.y);
             
+            cout<<"COGN_VEL_Y: "<<cognitive_velocity.y<<"\n";
+            
+            
             social_velocity.x = c2*r2*(global_best_position.x-this->current_pos.x);
             social_velocity.y = c2*r2*(global_best_position.y-this->current_pos.y);
+            
+            cout<<"SOC VEL_Y: "<<social_velocity.y<<"\n";
 
             particle_velocity.linear.x = w*particle_velocity.linear.x + cognitive_velocity.x + social_velocity.x;
             particle_velocity.linear.y = w*particle_velocity.linear.y + cognitive_velocity.y + social_velocity.y;
             
+            cout<<"VEL_Y: "<<particle_velocity.linear.y<<"\n";
+
             future_position_.x = this->current_pos.x + this->particle_velocity.linear.x;
             future_position_.y = this->current_pos.y + this->particle_velocity.linear.y;
 
-            cout<<"Future pos x: "<<ros::this_node::getNamespace()<<": "<<future_position_.x<<"\n";
-            cout<<"Future pos y: "<<ros::this_node::getNamespace()<<": "<<future_position_.y<<"\n";
+            //cout<<"Future pos x: "<<ros::this_node::getNamespace()<<": "<<future_position_.x<<"\n";
+            //cout<<"Future pos y: "<<ros::this_node::getNamespace()<<": "<<future_position_.y<<"\n";
             
             return future_position_;
             

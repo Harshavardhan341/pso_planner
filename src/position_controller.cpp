@@ -70,7 +70,7 @@ class Controller
         void des_pos_cb(const geometry_msgs::Point::ConstPtr& msg)
         {
             desired_position = *msg;
-            //this->go_to_desired_point(&desired_position);
+            this->go_to_desired_point(&desired_position);
         }
 
         void fix_yaw(double angle)
@@ -88,7 +88,7 @@ class Controller
             {   ros::spinOnce();
                 
 
-                ROS_INFO("err_yaw: [%f]",err_yaw);
+                //ROS_INFO("err_yaw: [%f]",err_yaw);
 
                 twist.angular.z = 1.5*err_yaw - 2*(err_yaw - prev_err);
                 
@@ -103,7 +103,7 @@ class Controller
             twist.angular.z = 0;
 
             cmd_vel_pub.publish(twist);
-            ROS_INFO("err_yaw: [%f]",err_yaw);
+            //ROS_INFO("err_yaw: [%f]",err_yaw);
             
 
         }
@@ -120,8 +120,8 @@ class Controller
             while(fabs(err_pos)>0.17)            
             {   ros::spinOnce();
             
-                ROS_INFO("err_pos: [%f]",err_pos);
-                ROS_INFO("err_yaw: [%f]",err_yaw);
+                //ROS_INFO("err_pos: [%f]",err_pos);
+                //ROS_INFO("err_yaw: [%f]",err_yaw);
 
                 
                 if(fabs(err_yaw)>0.05)

@@ -1,14 +1,17 @@
 <launch>
   <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
   <arg name="nr" default="2"/>
+  <arg name="x" value="$(eval arg('nr') - 1)"/>
+  <arg name="nr_" default="0"/>
   <arg name="ns" value="$(eval 'tb3_'+str(arg('nr')))"/>
   
-  <group if="$(eval arg('nr') == 0)">
+  <group if="$(eval arg('nr') == 1)">
     <rosparam command="load" file="$(find pso_planner)/config/config.yaml" />
+    <param name="/nr" value="$(arg nr_)"/> 
   </group>
 
 
-  <include file="$(find gazebo_ros)/launch/empty_world.launch" if="$(eval arg('nr') == 0)">
+  <include file="$(find gazebo_ros)/launch/empty_world.launch" if="$(eval arg('nr') == 1)">
     <arg name="world_name" value="$(find turtlebot3_gazebo)/worlds/empty_world.world"/>
     <arg name="paused" value="false"/>
     <arg name="use_sim_time" value="true"/>
@@ -25,15 +28,16 @@
       <param name="tf_prefix" value="$(arg ns)" />
     </node>
     
-    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg ns) -x $(arg nr) -y 0 -z 0 -param robot_description" />
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg ns) -x $(arg x) -y 0 -z 0 -param robot_description" />
     <node name="position_controller" pkg="pso_planner" type="position_controller_node" output="screen"/> 
     <node name="particle" pkg="pso_planner" type="particle_node" output="screen"/>    
     
   </group>
 
 
-    <include file="$(find pso_planner)/launch/multi_turtlebot.launch" if="$(eval arg('nr') - 1 > -1)">
+    <include file="$(find pso_planner)/launch/multi_turtlebot.launch" if="$(eval arg('nr') - 1 > 0)">
     <arg name="nr" value="$(eval arg('nr') - 1)"/>
+    <arg name="nr_" value="$(eval arg('nr_') +1)"/>
   </include>
 
 </launch>
