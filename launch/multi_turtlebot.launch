@@ -3,6 +3,10 @@
   <arg name="nr" default="2"/>
   <arg name="ns" value="$(eval 'tb3_'+str(arg('nr')))"/>
   
+  <group if="$(eval arg('nr') == 0)">
+    <rosparam command="load" file="$(find pso_planner)/config/config.yaml" />
+  </group>
+  
 
 
   <include file="$(find gazebo_ros)/launch/empty_world.launch" if="$(eval arg('nr') == 0)">

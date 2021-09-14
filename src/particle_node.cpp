@@ -5,6 +5,8 @@
 #include <math.h>
 #include <bits/stdc++.h>
 
+using namespace std;
+
 class Particle
 {
     public:
@@ -25,21 +27,23 @@ class Particle
         {   this->n = *nh;
             //random number between -1 and 1
             std::default_random_engine gen;
+            goal.x = 5;
+            goal.y = 6;
             std::uniform_real_distribution<float> dist(-1,1);
 
 
             this->particle_velocity.linear.x = dist(gen);
             this->particle_velocity.linear.y = dist(gen);
             odom_sub = this->n.subscribe("odom",1,&Particle::odomCallback,this);
-            goal_sub = this->n.subscribe("/goal",1,&Particle::goalCallback,this);
+            //goal_sub = this->n.subscribe("/goal",1,&Particle::goalCallback,this);
         } 
-        void goalCallback(const geometry_msgs::Point::ConstPtr& msg)
-        {
-            goal = *msg;
+        //void goalCallback(const geometry_msgs::Point::ConstPtr& msg)
+        //{
+           // goal = *msg;
             //for 
             //future_pos()
 
-        }
+        //}
         void odomCallback(const nav_msgs::Odometry::ConstPtr& msg)
         {   
             current_pos = msg->pose.pose.position;
@@ -52,7 +56,9 @@ class Particle
 
         }
         void evaluate()
-        {   ros::spinOnce();
+        {   ros::Duration(3.0);
+            ros::spinOnce();
+
             this->fitness_particle_position = costfunction(&current_pos);
             if(this->fitness_particle_position < this->local_best_fitness)
             {
@@ -72,6 +78,9 @@ class Particle
                 this->n.getParam("/global_best/x",global_best_pos_.x);
                 this->n.getParam("/global_best/y",global_best_pos_.y);            
         }
+        public:
+
+
         
         void future_pos()
         {   float nr,count;
@@ -84,14 +93,14 @@ class Particle
                 if(this->local_best_fitness < global_best_fitness)
                     
                     setGlobalBest(this->local_best_fitness,this->local_best_pos);
-                    //set global_best_position
-                this->n.setParam("/count",++count);                 
-
-            }
-            else if(count > nr)
-                getGlobalBest(this->global_best_fitness,this->global_best_pos); 
-                        
-            
+                
+                if(count<nr)
+                    {this->n.setParam("/count",++count); 
+                    ros::Duration(2.0).sleep();} 
+                else 
+                    this->n.setParam("/count",0);     
+                cout<<count<<endl;    
+            }        
             
 
         }
@@ -111,5 +120,8 @@ int main(int argc,char **argv)
 {
     ros::init(argc,argv,"Particle");
     ros::NodeHandle nh;
+    Particle particle(&nh);
+    particle.evaluate();
+    particle.future_pos();
 
 }
