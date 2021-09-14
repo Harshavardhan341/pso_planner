@@ -116,7 +116,7 @@ class Particle
                 
                 if(count<nr)
                     {this->n.setParam("/count",++count); 
-                    ros::Duration(0.1).sleep();
+                    ros::Duration(0.5).sleep();
                      } 
                 else 
                     count = 1;
