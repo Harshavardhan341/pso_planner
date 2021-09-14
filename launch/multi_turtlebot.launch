@@ -6,7 +6,6 @@
   <group if="$(eval arg('nr') == 0)">
     <rosparam command="load" file="$(find pso_planner)/config/config.yaml" />
   </group>
-  
 
 
   <include file="$(find gazebo_ros)/launch/empty_world.launch" if="$(eval arg('nr') == 0)">
@@ -19,7 +18,7 @@
   </include>  
 
   <group ns = "$(arg ns)">
-    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+    <param name="robot_description" command="$(find xacro)/xacro $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
 
     <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
       <param name="publish_frequency" type="double" value="50.0" />
@@ -27,9 +26,9 @@
     </node>
     
     <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg ns) -x $(arg nr) -y 0 -z 0 -param robot_description" />
-    <node name="position_controller" pkg="pso_planner" type="position_controller_node" output="screen"> 
-        
-    </node>
+    <node name="position_controller" pkg="pso_planner" type="position_controller_node" output="screen"/> 
+    <node name="particle" pkg="pso_planner" type="particle_node" output="screen"/>    
+    
   </group>
 
 

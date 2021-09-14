@@ -135,7 +135,7 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(position_controller_node src/position_controller.cpp)
-
+add_executable(particle_node src/particle_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -151,6 +151,10 @@ add_executable(position_controller_node src/position_controller.cpp)
 target_link_libraries(position_controller_node
    ${catkin_LIBRARIES}
 )
+target_link_libraries(particle_node
+   ${catkin_LIBRARIES}
+)
+
 
 #############
 ## Install ##

@@ -10,7 +10,7 @@ using namespace std;
 class Particle
 {
     public:
-        geometry_msgs::Point global_best_pos,local_best_pos,current_pos,future_pos,goal;
+        geometry_msgs::Point global_best_pos,local_best_pos,current_pos,future_position,goal;
         //current_pos,future_pos,goal;
         
         float w,c1,c2,r1,r2;
@@ -27,8 +27,11 @@ class Particle
         {   this->n = *nh;
             //random number between -1 and 1
             std::default_random_engine gen;
-            goal.x = 5;
-            goal.y = 6;
+            this->goal.x = 2;
+            this->goal.y = 5;
+            c1 = 1;
+            c2 = 2;
+            w = 0.85;
             std::uniform_real_distribution<float> dist(-1,1);
 
 
@@ -46,18 +49,21 @@ class Particle
         //}
         void odomCallback(const nav_msgs::Odometry::ConstPtr& msg)
         {   
-            current_pos = msg->pose.pose.position;
+            this->current_pos = msg->pose.pose.position;
+            this->particle_velocity = msg->twist.twist;
+
+            
 
         }
         float costfunction(geometry_msgs::Point *p)
         {
-            float dist = sqrtf(pow((goal.x - p->x),2)+pow((goal.y - p->y),2));
+            float dist = sqrtf(pow((this->goal.x - p->x),2)+pow((this->goal.y - p->y),2));
             return dist;
 
         }
         void evaluate()
-        {   ros::Duration(3.0);
-            ros::spinOnce();
+        {   
+            
 
             this->fitness_particle_position = costfunction(&current_pos);
             if(this->fitness_particle_position < this->local_best_fitness)
@@ -65,6 +71,7 @@ class Particle
                 this->local_best_pos = this->current_pos;
                 this->local_best_fitness = this->fitness_particle_position;
             }
+            
         }
         void setGlobalBest(const float local_best_fitness_,const geometry_msgs::Point& local_best_pos_)
         {  
@@ -84,9 +91,10 @@ class Particle
         
         void future_pos()
         {   float nr,count;
-            
+            evaluate();
             this->n.getParam("/global_best/fitness",global_best_fitness);
             this->n.getParam("/count",count);
+            
             this->n.getParam("/nr",nr);
             if(count <= nr)
             {
@@ -96,19 +104,35 @@ class Particle
                 
                 if(count<nr)
                     {this->n.setParam("/count",++count); 
-                    ros::Duration(2.0).sleep();} 
+                    ros::Duration(2.0).sleep();
+                     } 
                 else 
+                    count = 0;
                     this->n.setParam("/count",0);     
-                cout<<count<<endl;    
-            }        
-            
+                
 
+            }        
+            getGlobalBest(this->global_best_fitness,this->global_best_pos);
+            cout<<"Global_best fitness: "<<this->global_best_fitness<<"\n";
+
+            
         }
         geometry_msgs::Point update_position(geometry_msgs::Point& global_best_position)
         {
             this->r1 = ((double) rand() / (RAND_MAX)) + 1;
             this->r2 = ((double) rand() / (RAND_MAX)) + 1;
 
+            geometry_msgs::Point cognitive_velocity,social_velocity;
+            cognitive_velocity.x = c1*r1*(this->local_best_pos.x-this->current_pos.x);
+            cognitive_velocity.y = c1*r1*(this->local_best_pos.y-this->current_pos.y);
+            
+            social_velocity.x = c2*r2*(global_best_position.x-this->current_pos.x);
+            social_velocity.y = c2*r2*(global_best_position.y-this->current_pos.y);
+
+            particle_velocity.linear.x = w*particle_velocity.linear.x + cognitive_velocity.x + social_velocity.x;
+            particle_velocity.linear.y = w*particle_velocity.linear.y + cognitive_velocity.y + social_velocity.y;
+            
+            
             
         }
 
@@ -121,7 +145,12 @@ int main(int argc,char **argv)
     ros::init(argc,argv,"Particle");
     ros::NodeHandle nh;
     Particle particle(&nh);
-    particle.evaluate();
+    int i =0;
+    while(i<5)
+    {ros::Duration(1.0).sleep();
+    ros::spinOnce();
     particle.future_pos();
+    i++;
+    }
 
 }
