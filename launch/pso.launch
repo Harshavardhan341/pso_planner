@@ -1,0 +1,21 @@
+<launch>
+    <arg name="nr" default="2"/>
+    <arg name="x" value="$(eval arg('nr') - 1)"/>
+    <arg name="nr_" default="1"/>
+    <arg name="ns" value="$(eval 'tb3_'+str(arg('nr')))"/>
+  
+    <group if="$(eval arg('nr') == 1)">
+        <rosparam command="load" file="$(find pso_planner)/config/config.yaml" />
+        <param name="/nr" value="$(arg nr_)"/> 
+    </group>
+    <group ns = "$(arg ns)"> 
+      <node name="particle" pkg="pso_planner" type="particle_node" output="screen"/>    
+    </group>
+
+
+    <include file="$(find pso_planner)/launch/pso.launch" if="$(eval arg('nr') - 1 > 0)">
+        <arg name="nr" value="$(eval arg('nr') - 1)"/>
+        <arg name="nr_" value="$(eval arg('nr_') +1)"/>
+    </include>
+
+</launch>
