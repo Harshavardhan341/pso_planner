@@ -13,7 +13,7 @@ class Particle
         geometry_msgs::Point global_best_pos,local_best_pos,current_pos,future_position,goal;
         //current_pos,future_pos,goal;
         
-        float w,c1,c2,r1,r2;
+        
         ros::Subscriber odom_sub;
         ros::Subscriber goal_sub;
         float fitness_particle_position = std::numeric_limits<float>::infinity();
@@ -29,9 +29,7 @@ class Particle
             //random number between -1 and 1
             std::default_random_engine gen;
             
-            c1 = 1;
-            c2 = 2;
-            w = 0.85;
+
             command_pos_pub = this->n.advertise<geometry_msgs::Point>("desired_pos",10);
             odom_sub = this->n.subscribe("odom",1,&Particle::odomCallback,this);
             goal_sub = this->n.subscribe("/goal",1,&Particle::goalCallback,this);
@@ -39,8 +37,7 @@ class Particle
         void goalCallback(const geometry_msgs::Point::ConstPtr& msg)
         {
             goal = *msg;
-            cout<<"Goal_x: "<<goal.x<<"\n";
-            cout<<"Goal_y: "<<goal.y<<"\n";
+
             ros::Duration(5.0).sleep();
 
             odom_sub.shutdown();
@@ -125,12 +122,10 @@ class Particle
 
             }        
             getGlobalBest(this->global_best_fitness,this->global_best_pos);
-            cout<<"Global_best fitness: "<<this->global_best_fitness<<"\n";
-            cout<<"Global best position x: "<<this->global_best_pos.x<<"\n";
-            cout<<"Global best position y: "<<this->global_best_pos.y<<"\n";
+
 
             this->current_pos = update_position(global_best_pos);
-            //command_pos_pub.publish(future_position);
+            command_pos_pub.publish(future_position);
 
             
             
@@ -138,9 +133,13 @@ class Particle
         geometry_msgs::Point update_position(geometry_msgs::Point& global_best_position)
         {   
             geometry_msgs::Point future_position_;
+            float w,c1,c2,r1,r2;
+            this->n.getParam("/w",w);
+            this->n.getParam("/c1",c1);
+            this->n.getParam("/c2",c2);
 
-            this->r1 = ((double) rand() / (RAND_MAX));
-            this->r2 = ((double) rand() / (RAND_MAX));
+            r1 = ((double) rand() / (RAND_MAX));
+            r2 = ((double) rand() / (RAND_MAX));
             
 
 
@@ -148,19 +147,18 @@ class Particle
             cognitive_velocity.x = c1*r1*(this->local_best_pos.x-this->current_pos.x);
             cognitive_velocity.y = c1*r1*(this->local_best_pos.y-this->current_pos.y);
             
-            cout<<"local best position.y: "<<this->local_best_pos.y<<"\n";
-            cout<<"current_pos.y: "<<this->current_pos.y<<"\n";
+
             
             
             social_velocity.x = c2*r2*(global_best_position.x-this->current_pos.x);
             social_velocity.y = c2*r2*(global_best_position.y-this->current_pos.y);
             
-            cout<<"SOC VEL_Y: "<<social_velocity.y<<"\n";
+            
 
             particle_velocity.linear.x = w*particle_velocity.linear.x + cognitive_velocity.x + social_velocity.x;
             particle_velocity.linear.y = w*particle_velocity.linear.y + cognitive_velocity.y + social_velocity.y;
             
-            cout<<"VEL_Y: "<<particle_velocity.linear.y<<"\n";
+            
 
             future_position_.x = this->current_pos.x + this->particle_velocity.linear.x;
             future_position_.y = this->current_pos.y + this->particle_velocity.linear.y;
