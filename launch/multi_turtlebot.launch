@@ -30,7 +30,7 @@
     
     <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg ns) -x $(arg x) -y 0 -z 0 -param robot_description" />
     <node name="position_controller" pkg="pso_planner" type="position_controller_node" output="screen"/> 
-    <node name="particle" pkg="pso_planner" type="particle_node" output="screen"/>    
+   
     
   </group>
 
