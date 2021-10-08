@@ -1,2 +1,2 @@
 # Particle Swarm Optimization based Target Search
-helloooo
+Over the years, multiple algorithms have beenput forward and have proven to be viable for the path planning of each of thenodes in these multi-robot systems, in an efficient manner given various con-straints, and while allowing for decentralized communication mechanisms, andbalancing efficiency, exploration, and exploitation with varying number of robots.Some examples include Genetic algorithms, Bee Colony Optimization, Differen-tial Evolution, Gravitational Search, Bat algorithm, and particle swarm optimization.
