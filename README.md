@@ -13,3 +13,27 @@ where *pB* is the personal best coordinate for each particle and *gB* is the glo
 
 ## Implementation
 This package utilizes multiple particle (robot) nodes communicating with a single master (ROS Master) server witht the help of ROS parameters to find the global best particle and to assign respective trajectories to the bots based on the above equation.
+
+## Prerquisites
+- ROS Melodic
+- Ubuntu 18.04
+
+## Usage
+Clone the repository in your workspace and build the packages
+```
+cd ~/ws/src/
+git clone https://github.com/Harshavardhan341/pso_planner
+cd ~/ws
+catkin_make 
+```
+To run the simulation:
+
+```
+roslaunch pso_planner multi_turtlebot.launch nr:= 5
+roslaunch pso_planner pso.launch nr:=5
+```
+
+
+
+
+
