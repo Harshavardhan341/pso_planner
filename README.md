@@ -6,7 +6,7 @@ By definition, particle swarm optimization (PSO) is a computational methodthat o
 with regard to a given measure of quality. This algorithm traditionally finds usagein mathematical optimization problems, where the global minimum of a function is located by multiple nodes, and hence can be extrapolated as an ideal solution to multi-robot target searching in unknown environments. 
 The objective is to find a global best particle based on a distance based heuristic and accordingly assign velocities to all bots in the swarm based on the coordinates of the global best particle's position based on the following equation.
 
-![equation](https://latex.codecogs.com/svg.image?;v_i^{t&plus;1}=wv_i^t&plus;c_1r_1(pB_i^t-x_i^t)&plus;c_2r_2(gB_i^t-x_i^t))
+![equation](https://latex.codecogs.com/svg.image?v_i^{t&plus;1}=wv_i^t&plus;c_1r_1(pB_i^t-x_i^t)&plus;c_2r_2(gB_i^t-x_i^t))
 
 
 where *pB* is the personal best coordinate for each particle and *gB* is the global best coordinate of the system. This process is iterated until we reach sufficiently close to our desired target.
