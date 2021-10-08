@@ -30,8 +30,10 @@ To run the simulation:
 
 ```
 roslaunch pso_planner multi_turtlebot.launch nr:= 5
-roslaunch pso_planner pso.launch nr:=5
+
 ```
+Publish the desired goal on the /goal topic 
+
 
 
 
