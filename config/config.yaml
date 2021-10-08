@@ -1,0 +1,8 @@
+global_best:
+  fitness: .inf
+  x: 0
+  y: 0
+count: 1
+nr: 2
+
+  
