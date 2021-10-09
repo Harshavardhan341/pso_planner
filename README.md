@@ -1,5 +1,5 @@
 # Particle Swarm Optimization based Target Search
-Over the years, multiple algorithms have been put forward and have proven to be viable for the path planning of each of the nodes in these multi-robot systems, in an efficient manner given various constraints, and while allowing for decentralized communication mechanisms, and balancing efficiency, exploration, and exploitation with varying number of robots. Some examples include Genetic algorithms, Bee Colony Optimization, Differen-tial Evolution, Gravitational Search, Bat algorithm, and particle swarm optimization.
+Over the years, multiple algorithms have been put forward and have proven to be viable for the path planning of each of the nodes in these multi-robot systems, in an efficient manner given various constraints, and while allowing for decentralized communication mechanisms, and balancing efficiency, exploration, and exploitation with varying number of robots. Some examples include Genetic algorithms, Bee Colony Optimization, Differential Evolution, Gravitational Search, Bat algorithm, and particle swarm optimization.
 
 ## Algorithm 
 By definition, particle swarm optimization (PSO) is a computational methodthat optimizes a problem by iteratively trying to improve a candidate solution
